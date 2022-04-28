@@ -2,11 +2,12 @@ const cells = document.querySelectorAll('.cell');
 const timer = document.getElementById('timer');
 const resultDisplay = document.getElementById('result-display');
 
-let time = 5;
+let time = 30;
 time.innerText = time;
+let timeInput = 30;
 
 //generare 5 numeri casuali
-const maxNumber = 5;
+const maxNumber = 99;
 const numbers = [];
 const userNumbers = [];
 
@@ -21,7 +22,8 @@ while(numbers.length < cells.length){
   if(!numbers.includes(randomNumber)){
     numbers.push(randomNumber);
     //inserire il numero nella cella;
-    cells[counter].innerText = randomNumber;
+    cells[counter].value = randomNumber;
+    cells[counter].classList.add('disabled');
     counter++;
   }
 }
@@ -38,39 +40,55 @@ function timerClock(){
   }
 }
 
+let takeInputIntv = null;
 function clearCells(){
   for(let i = 0; i < cells.length; i++){
-    cells[i].innerText = '?';
+    cells[i].value = '';
+    cells[i].setAttribute('placeholder', '?');
+    cells[i].classList.remove('disabled');
   }
-  //chiedere i numeri all'utente e controllare se i numeri sono corretti
-  setTimeout(askNumbers, 1000);
+  //iniziare il cronometro
+  timer.innerText = timeInput;
+  //prelevare i numeri scritti dall'utente e controllarli
+  takeInputIntv = setInterval(inputClockFunction, 1000);
 }
 
-function askNumbers(){
-  let index = 0;
-  while(userNumbers.length < cells.length){
-    const askedNumber = parseInt(prompt(`Inserisci un numero presente nella tabella (${index +1}/${cells.length})`));
+function inputClockFunction(){
+  timeInput--;
+  timer.innerText = timeInput;
+  if(timeInput <= 0){
+    clearInterval(takeInputIntv);
+    takeInput();
+  }
+}
 
-    if(!userNumbers.includes(askedNumber) && !isNaN(askedNumber)){
-      userNumbers.push(askedNumber);
-      index++;
-    }
+function takeInput(){
+  //prelevare i numeri dagli input
+  for(let i = 0; i < cells.length; i++){
+    //disabilitare le celle
+    cells[i].classList.add('disabled');
+
+    const currentNumber = parseInt(cells[i].value);
+    userNumbers.push(currentNumber);
+
   }
 
-  //controllare i numeri inseriti e dire se si ha indovinato
-  const correctNumbers = checkSameArray(numbers, userNumbers);
+  //controllare quanti numeri corretti sono stati inseriti
+  const correctNumbers = checkSameArray(numbers, userNumbers)
 
   let result;
-  if(correctNumbers.length === numbers.length){
+  if(correctNumbers === numbers.length){
     result = 'Hai indovinato tutti i numeri';
-  }else if(correctNumbers.length === 0){
+  }else if(correctNumbers === 0){
     result = 'Non ne hai azzeccato neanche uno';
   }else{
-    result = `Hai indovinato ${correctNumbers.length}/${numbers.length}`;
+    result = `Numeri indovinati ${correctNumbers}/${numbers.length}`;
   }
 
   resultDisplay.innerText = result;
 }
+
+//paragonare i due array
 
 function checkSameArray(firstArray, secondArray){
   const positiveMatch = [];
@@ -84,6 +102,6 @@ function checkSameArray(firstArray, secondArray){
       positiveMatch.push(firstArray[i]);
     }
   }
-  console.log(positiveMatch);
-  return positiveMatch;
+  console.log('Numeri corretti', positiveMatch);
+  return positiveMatch.length;
 }
