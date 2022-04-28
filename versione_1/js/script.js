@@ -2,7 +2,7 @@ const cells = document.querySelectorAll('.cell');
 const timer = document.getElementById('timer');
 
 //generare 5 numeri casuali
-const maxNumber = 5;
+const maxNumber = 99;
 const numbers = [];
 const userNumbers = [];
 
@@ -23,7 +23,7 @@ while(numbers.length < cells.length){
 }
 
 //ripulire le celle dopo 30 secondi
-setTimeout(clearCells, 3000);
+setTimeout(clearCells, 30000);
 
 function clearCells(){
   for(let i = 0; i < cells.length; i++){
